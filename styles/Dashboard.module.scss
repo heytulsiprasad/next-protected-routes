@@ -3,7 +3,6 @@
   flex-direction: column;
   min-height: 100vh;
   padding: 2rem 4rem;
-  position: relative;
 }
 
 .navbar {
@@ -26,32 +25,6 @@
 
 .navProfile {
   cursor: pointer;
-}
-
-.profileMenu {
-  padding: 0.45rem;
-  position: absolute;
-  right: 4rem;
-  top: 5rem;
-  border-radius: 0.5rem;
-  background-color: #fff;
-  box-shadow: rgba(157, 157, 157, 0.732);
-  min-width: 6rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.profileMenuItem {
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  font-size: 0.875rem;
-
-  &:hover {
-    background-color: #f5f5f5;
-  }
 }
 
 .weatherApp {
@@ -83,69 +56,4 @@
   display: flex;
   flex-direction: column;
   margin-top: 1rem;
-}
-
-.result {
-  width: 100%;
-  padding: 1rem 2rem;
-  background-color: #fff;
-  margin-top: 2rem;
-  border-radius: 1rem;
-
-  h1 {
-    font-size: 2rem;
-  }
-}
-
-.resultHeader {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.resultDetails {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1rem;
-}
-
-.resultDetailsLeft {
-  img {
-    width: 5rem;
-    height: 5rem;
-  }
-}
-
-.resultDetailsMiddle {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: center;
-
-  h2 {
-    font-size: 4rem;
-    font-weight: 400;
-  }
-}
-
-.resultDetailsRight {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: flex-end;
-}
-
-.resultDetailsInfo {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  align-items: center;
-  width: 100%;
-}
-
-.favIcon {
-  cursor: pointer;
 }
