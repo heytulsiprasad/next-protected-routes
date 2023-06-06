@@ -73,7 +73,7 @@ const Dashboard = () => {
     } else {
       setResult((prev) => ({ ...prev, isFavorite: false }));
     }
-  }, [result.location]);
+  }, [result?.location]);
 
   const logoutHandler = async () => {
     await signOut(auth);
