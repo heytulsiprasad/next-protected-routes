@@ -6,26 +6,74 @@ import { useEffect, useRef, useState } from "react";
 import { Avatar, Button, Loader } from "@mantine/core";
 import { signOut, getAuth } from "firebase/auth";
 import { notifications } from "@mantine/notifications";
-import Link from "next/link";
-import emailToName from "email-to-name";
-import { useClickOutside } from "@mantine/hooks";
 import axios from "axios";
-import { AiFillStar, AiOutlineStar, AiFillCloud } from "react-icons/ai";
-import { FiWind } from "react-icons/fi";
-import { WiHumidity } from "react-icons/wi";
 import Navbar from "@/components/Navbar";
 import WeatherCard from "@/components/WeatherCard";
+import {
+  collection,
+  doc,
+  setDoc,
+  getDocs,
+  deleteDoc,
+} from "firebase/firestore";
+import { db } from "@/firebase/config";
 
 const Dashboard = () => {
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
   const [result, setResult] = useState();
+  const [favorites, setFavorites] = useState([]);
 
   const { setUser, user } = useAuthContext();
   const router = useRouter();
   const auth = getAuth();
-  const profileMenuRef = useClickOutside(() => setOpen(false));
+
+  // console.log(user);
+
+  // Fetch favorites when user is logged in
+  useEffect(() => {
+    // Fetch all favorites
+    const fetchFavorites = async () => {
+      const placesFavoritesRef = collection(
+        db,
+        "places",
+        user.uid,
+        "favorites"
+      );
+
+      const favResults = [];
+
+      const querySnapshot = await getDocs(placesFavoritesRef);
+
+      if (querySnapshot.empty) {
+        console.log("No matching documents.");
+        return;
+      }
+
+      querySnapshot.forEach((doc) => {
+        console.log(doc.id, "=>", doc.data());
+        favResults.push(doc.id);
+      });
+
+      setFavorites(favResults);
+    };
+
+    fetchFavorites();
+  }, [user]);
+
+  // Update isFavorite when result is changed
+  useEffect(() => {
+    if (!result?.location) return;
+
+    const id =
+      `${result.location.name}-${result.location.region}-${result.location.country}`.trim();
+
+    if (favorites.includes(id)) {
+      setResult((prev) => ({ ...prev, isFavorite: true }));
+    } else {
+      setResult((prev) => ({ ...prev, isFavorite: false }));
+    }
+  }, [result.location]);
 
   const logoutHandler = async () => {
     await signOut(auth);
@@ -64,7 +112,6 @@ const Dashboard = () => {
 
       console.log(response.data);
       setResult(response.data);
-      setValue("");
     } catch (error) {
       console.log(error.response.data);
 
@@ -73,9 +120,34 @@ const Dashboard = () => {
         message: error.response.data.error.message,
         color: "red",
       });
+    } finally {
+      setValue("");
     }
 
     setLoading(false);
+  };
+
+  const addFavoritesHandler = async (id) => {
+    const placesFavoritesRef = collection(db, "places", user.uid, "favorites");
+
+    const payload = { ...result.location };
+
+    console.log("Adding payload...", id, payload);
+
+    // setDoc replaces the document if it already exists
+    await setDoc(doc(placesFavoritesRef, id), payload);
+
+    // Update result object in state
+    setResult((prev) => ({ ...prev, isFavorite: true }));
+  };
+
+  const removeFavoritesHandler = async (id) => {
+    const placesFavoritesRef = collection(db, "places", user.uid, "favorites");
+
+    console.log("Removing payload...", id);
+    await deleteDoc(doc(placesFavoritesRef, id));
+
+    setResult((prev) => ({ ...prev, isFavorite: false }));
   };
 
   return (
@@ -111,7 +183,11 @@ const Dashboard = () => {
           {loading && <Loader />}
 
           {result?.location && result?.current && (
-            <WeatherCard result={result} />
+            <WeatherCard
+              result={result}
+              addFavoritesHandler={addFavoritesHandler}
+              removeFavoritesHandler={removeFavoritesHandler}
+            />
           )}
         </div>
       </div>

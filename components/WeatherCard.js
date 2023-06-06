@@ -4,7 +4,15 @@ import { AiOutlineStar, AiFillStar, AiFillCloud } from "react-icons/ai";
 import { FiWind } from "react-icons/fi";
 import { WiHumidity } from "react-icons/wi";
 
-const WeatherCard = ({ result }) => {
+const WeatherCard = ({
+  result,
+  addFavoritesHandler,
+  removeFavoritesHandler,
+}) => {
+  // Construct id of the location to save in favorites
+  const id =
+    `${result.location.name}-${result.location.region}-${result.location.country}`.trim();
+
   return (
     <div className={styles.result}>
       <div className={styles.resultHeader}>
@@ -14,16 +22,21 @@ const WeatherCard = ({ result }) => {
           </h1>
         </div>
         <div className={styles.favIcon}>
-          <AiOutlineStar
-            size="24px"
-            color="#FFDF00"
-            style={{ marginTop: "5px" }}
-          />
-          {/* <AiFillStar
-                    size="24px"
-                    color="#FFDF00"
-                    style={{ marginTop: "5px" }}
-                  /> */}
+          {result.isFavorite ? (
+            <AiFillStar
+              size="24px"
+              color="#FFDF00"
+              style={{ marginTop: "5px" }}
+              onClick={() => removeFavoritesHandler(id)}
+            />
+          ) : (
+            <AiOutlineStar
+              size="24px"
+              color="#FFDF00"
+              style={{ marginTop: "5px" }}
+              onClick={() => addFavoritesHandler(id)}
+            />
+          )}
         </div>
       </div>
       <div className={styles.resultDetails}>
